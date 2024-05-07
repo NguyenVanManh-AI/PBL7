@@ -1,0 +1,12 @@
+# Ignore environment files
+env/
+
+# Ignore Python bytecode files
+__pycache__/
+
+# Ignore Django migration files
+*/migrations/*.py
+*/migrations/*.pyc
+
+# Ignore any local settings files
+local_settings.py
