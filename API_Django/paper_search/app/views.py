@@ -4,7 +4,8 @@ from rest_framework.pagination import PageNumberPagination
 import csv
 
 PATH = './app/papers_data_done.csv'
-URL = './app/image/'
+PATH2 = './app/output.csv'
+URL = './app/static/app/images/'
 
 def search_by_keywords(keyword, csv_file_path):
     results = []
@@ -78,7 +79,7 @@ def trend_year(request):
 
     url, table = get_url_table(int(year))
     response_data = {
-        "url": url,
+        "url": "http://127.0.0.1:8000/static/app/images/wordcloud.png",
         "table": table,
     }    
     # Trả về phản hồi RESTful API
@@ -186,7 +187,45 @@ def trend_10_year(request):
     plt.close()  # Đóng biểu đồ để giải phóng bộ nhớ
     
     response_data = {
-        "url": image_path,
+        "url": "http://127.0.0.1:8000/static/app/images/line_graph.png",
     }    
     # Trả về phản hồi RESTful API
     return Response(response_data, status=200)
+
+
+##############################################################################
+import torch
+import csv
+import ast
+import numpy as np
+
+def DictOutput():
+    reconstructed_dict = {}
+    
+    with open("output.csv", "r") as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            key = row[0]
+            # print(row[1:][0])
+            # Chuyển đổi giá trị từ danh sách sang tensor
+            row_data = ast.literal_eval(row[1:][0])
+            values = list(map(float, row_data))  # Assuming the values were floats
+            reconstructed_dict[key] = torch.tensor(values)
+
+    return reconstructed_dict
+
+def euclidean_distance(a, b):
+    return np.linalg.norm(a - b)
+
+def top_10(keyword, reconstructed_dict):
+  embed_keyword = reconstructed_dict[keyword]
+  distance_arrs = {}
+  for key, value in reconstructed_dict.items():
+    distance_arrs[key] = euclidean_distance(embed_keyword, value)
+    # print(distance_arrs[key])
+  sorted_dict = dict(sorted(distance_arrs.items(), key=lambda item: item[1]))
+  # Lấy top 10 phần tử đầu tiên
+  top_10 = dict(list(sorted_dict.items())[:10])
+
+  print(top_10)
+
