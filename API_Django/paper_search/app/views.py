@@ -104,7 +104,8 @@ def get_url_table(year):
     if "" in dic:
         dic[""] = 0
 
-    
+    if "re" in dic:
+        dic["re"] = 0
 
     # Chuyển dictionary thành DataFrame
     df_table = pd.DataFrame(dic.items(), columns=['Word', 'Frequency'])
@@ -193,31 +194,85 @@ def trend_10_year(request):
     return Response(response_data, status=200)
 
 
+
+def plot_keyword_trends(keywords, csv_path, end_year):
+    # Đọc dữ liệu từ tệp CSV
+    df = pd.read_csv(csv_path)
+    
+    # Tạo một danh sách để lưu trữ dữ liệu từ khóa và tần suất
+    keyword_data_list = []
+    
+    # Lặp qua từng năm từ 9 năm trước đến năm hiện tại
+    for y in range(max(1987, end_year - 9), end_year + 1):
+        # Lọc dữ liệu cho từng năm
+        data_for_year = df[df['Year'] == y]
+        
+        # Tạo một từ điển để đếm tần suất của từng từ khóa cho năm hiện tại
+        keyword_count = {keyword: 0 for keyword in keywords}
+        for keywords_row in data_for_year['Keywords']:
+            # Xử lý chuỗi từ khóa và đếm tần suất xuất hiện của từng từ khóa
+            words = keywords_row.strip('[]').split(', ')
+            for word in words:
+                word = word.strip("'")
+                if word in keyword_count:
+                    keyword_count[word] += 1
+        
+        # Thêm dữ liệu từ khóa và tần suất vào danh sách
+        for keyword, freq in keyword_count.items():
+            keyword_data_list.append({'Year': y, 'Keyword': keyword, 'Frequency': freq})
+    
+    # Tạo DataFrame từ danh sách dữ liệu từ khóa
+    keyword_trends = pd.DataFrame(keyword_data_list)
+    
+    # Vẽ biểu đồ đường cho các từ khóa
+    plt.figure(figsize=(14, 8))
+    for keyword in keywords:
+        keyword_data = keyword_trends[keyword_trends['Keyword'] == keyword]
+        plt.plot(keyword_data['Year'], keyword_data['Frequency'], marker='o', label=keyword)
+    
+    # Đặt tiêu đề và nhãn cho biểu đồ
+    plt.title('Trend of Keywords Over 10 Years')
+    plt.xlabel('Year')
+    plt.ylabel('Frequency')
+    plt.legend()
+    plt.grid(True)
+
+    # Lưu biểu đồ dưới dạng ảnh
+    image_path = URL + 'line_graph_2.png'
+    plt.savefig(image_path)
+    plt.close()  # Đóng biểu đồ để giải phóng bộ nhớ
+    
+
+
 ##############################################################################
 import torch
 import csv
 import ast
 import numpy as np
 
-def DictOutput():
-    reconstructed_dict = {}
-    
-    with open("output.csv", "r") as csvfile:
-        csvreader = csv.reader(csvfile)
-        for row in csvreader:
-            key = row[0]
-            # print(row[1:][0])
-            # Chuyển đổi giá trị từ danh sách sang tensor
-            row_data = ast.literal_eval(row[1:][0])
-            values = list(map(float, row_data))  # Assuming the values were floats
-            reconstructed_dict[key] = torch.tensor(values)
+reconstructed_dict = {}
 
-    return reconstructed_dict
+with open("./app/output.csv", "r", encoding='utf-8') as csvfile:
+    csvreader = csv.reader(csvfile)
+    for row in csvreader:
+        key = row[0]
+        # print(row[1:][0])
+        # Chuyển đổi giá trị từ danh sách sang tensor
+        row_data = ast.literal_eval(row[1:][0])
+        values = list(map(float, row_data))  # Assuming the values were floats
+        reconstructed_dict[key] = torch.tensor(values)
 
 def euclidean_distance(a, b):
     return np.linalg.norm(a - b)
 
 def top_10(keyword, reconstructed_dict):
+#   return [
+#     'transformer', 'vitae transformer', 'adapter', '3dversarial generator', 
+#     'quadattack', 'retvecbedding model', 'beamrecuionly', 
+#     'cnn', 'noisy power methodm', 'collaborative transformer'
+# ]
+
+
   embed_keyword = reconstructed_dict[keyword]
   distance_arrs = {}
   for key, value in reconstructed_dict.items():
@@ -228,4 +283,24 @@ def top_10(keyword, reconstructed_dict):
   top_10 = dict(list(sorted_dict.items())[:10])
 
   print(top_10)
+  return list(top_10.keys()), list(top_10.values())
 
+@api_view(['GET'])
+def trend_10_keywords(request):
+    year = request.query_params.get('year', '') # Lấy tham số search từ query params
+    keyword = request.query_params.get('keyword', '')
+    if year == '':
+        year = datetime.now().year - 1
+    else:
+        year = int(year)
+
+    keywords, euclid = top_10(keyword, reconstructed_dict)
+    plot_keyword_trends(keywords, PATH, year)
+    
+    response_data = {
+        "url": "http://127.0.0.1:8000/static/app/images/line_graph_2.png",
+        "keywords": keywords,
+        "euclid": euclid
+    }    
+    # Trả về phản hồi RESTful API
+    return Response(response_data, status=200)  
