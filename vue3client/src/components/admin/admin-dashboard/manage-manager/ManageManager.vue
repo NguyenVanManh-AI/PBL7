@@ -139,7 +139,7 @@ import LockManyManager from '@/components/admin/admin-dashboard/manage-manager/L
 export default {
     name: "ManageManager",
     setup() {
-        document.title = "Manager Account | Geomodelling"
+        document.title = "Manager Account | PBL7"
     },
     components: {
         paginate: Paginate,

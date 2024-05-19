@@ -167,7 +167,7 @@ export default {
         }
     },
     setup() {
-        document.title = "Account Setting | Geomodelling";
+        document.title = "Account Setting | PBL7";
     },
     async mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));

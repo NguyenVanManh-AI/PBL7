@@ -52,7 +52,7 @@ export default {
     },
     mounted() {
         emitEvent('eventTitleHeader', 'Channel Manages Maps');
-        document.title = "View Detail Maps | Geomodelling";
+        document.title = "View Detail Maps | PBL7";
         const id = this.$route.params.id;
         this.fetchMapDetail(id);
         window.addEventListener('resize', this.onWindowResize);

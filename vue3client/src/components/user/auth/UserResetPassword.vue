@@ -67,7 +67,7 @@ export default {
 		var appMain = window.document.getElementById('appMain');
 		appMain.style.paddingLeft = '0px'
 
-		window.document.title = 'Geomodelling Reset Password | Geomodelling';
+		window.document.title = 'PBL7 Reset Password | PBL7';
 		let urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.has('token')) this.submitPassword.token = urlParams.get('token');
 	},

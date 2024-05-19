@@ -258,7 +258,7 @@ export default {
     },
 
     setup() {
-        document.title = "Manages Content | Geomodelling"
+        document.title = "Manages Content | PBL7"
     },
 
     mounted() {

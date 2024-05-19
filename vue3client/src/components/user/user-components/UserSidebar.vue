@@ -2,7 +2,7 @@
   <div class="sidebar" :class="isUserOpened ? 'open' : ''" :style="cssVars" ref="sidebar">
     <div class="logo-details" style="margin: 10px 14px 0 14px;">
       <img src="@/assets/logo.png" alt="menu-logo" class="menu-logo icon" style="" @click="compadmin">
-      <div class="logo_name" @click="compadmin"> GeoModel</div>
+      <div class="logo_name" @click="compadmin"> PBL7</div>
       <i style="color: var(--user-color);" class="bx" :class="isUserOpened ? 'bx-menu-alt-right' : 'bx-menu'" id="btn"
         @click="openSiderbar"></i>
     </div>
@@ -19,6 +19,16 @@
           </span>
           <span>
             <li>
+              <router-link class="links" data-path="paper-search" :to="{ name: 'PaperSearch' }"><i class="fa-solid fa-file-word"></i><span class="links_name">Paper Search</span></router-link>
+            </li>
+          </span>
+          <span>
+            <li>
+              <router-link class="links" data-path="paper-statistical" :to="{ name: 'PaperStatistical' }"><i class="fa-solid fa-chart-column"></i><span class="links_name">Paper Statistical</span></router-link>
+            </li>
+          </span>
+          <!-- <span>
+            <li>
               <router-link class="links" data-path="manage-map" :to="{ name: 'MapManage' }"><i class="fa-solid fa-map-location-dot"></i><span class="links_name">Maps Manage</span></router-link>
             </li>
           </span>
@@ -26,7 +36,7 @@
             <li>
               <a class="links" @click="gotoViewMap"><i class="fa-solid fa-earth-americas"></i><span class="links_name">View Maps</span></a>
             </li>
-          </span>
+          </span> -->
           <!-- <span>
             <li>
               <router-link class="links" data-path="flower-recognition" :to="{ name: 'FlowerRecognition' }"><i class="fa-solid fa-fan"></i><span class="links_name">Flowers Recognition</span></router-link>

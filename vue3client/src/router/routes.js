@@ -12,32 +12,40 @@ import AdminLogin from '@/components/admin/auth/AdminLogin'
 // user 
 import UserMain from '@/components/user/UserMain'
 import AccountSetting from '@/components/user/account-setting/AccountSetting'
-import FlowerRecognition from '@/components/user/flower-recognition/FlowerRecognition'
-import MultipleFlowerRecognition from '@/components/user/flower-recognition/MultipleFlowerRecognition'
-import IPMultipleFlowerRecognition from '@/components/user/flower-recognition/IPMultipleFlowerRecognition'
-import AlzheimersRecognition from '@/components/user/alzheimers-recognition/AlzheimersRecognition'
 import MemberAccount from '@/components/user/member-account/MemberAccount'
 import ManageContent from '@/components/user/manage-content/ManageContent'
 import ManageBroadcast from '@/components/user/manage-broadcast/ManageBroadcast'
 import StatisticalChannel from '@/components/user/statistical-channel/StatisticalChannel'
 import UserLogin from '@/components/user/auth/UserLogin'
 import UserResetPassword from '@/components/user/auth/UserResetPassword'
+
+// ai + xla 
+import FlowerRecognition from '@/components/user/flower-recognition/FlowerRecognition'
+import MultipleFlowerRecognition from '@/components/user/flower-recognition/MultipleFlowerRecognition'
+import IPMultipleFlowerRecognition from '@/components/user/flower-recognition/IPMultipleFlowerRecognition'
+import AlzheimersRecognition from '@/components/user/alzheimers-recognition/AlzheimersRecognition'
+
+// geo
 import MapManage from '@/components/user/geo/MapManage'
 import ViewDetailMap from '@/components/user/geo/ViewDetailMap'
 import ViewMap from '@/components/user/geo/ViewMap'
+
+// pbl7 
+import PaperSearch from '@/components/user/pbl7/PaperSearch'
+import PaperStatistical from '@/components/user/pbl7/PaperStatistical'
 
 // other 
 import CommonNotFound from '@/components/common/CommonNotFound'
 
 // middleware authUser
-const authUser = (to, from, next) => {
-    const user = localStorage.getItem('user');
-    if (user) next();
-    else {
-        next({ name: 'UserLogin' });
-        emitEvent('eventError', 'You need to login !');
-    }
-};
+// const authUser = (to, from, next) => {
+//     const user = localStorage.getItem('user');
+//     if (user) next();
+//     else {
+//         next({ name: 'UserLogin' });
+//         emitEvent('eventError', 'You need to login !');
+//     }
+// };
 
 // middleware authAdmin
 const authAdmin = (to, from, next) => {
@@ -71,19 +79,24 @@ const routes = [
         path: '/',
         component: UserMain,
         name: 'UserMain',
-        beforeEnter: authUser,
+        // beforeEnter: authUser,
         children: [
             { path: 'account-setting', name: 'AccountSetting', component: AccountSetting },
-            { path: 'flower-recognition', name: 'FlowerRecognition', component: FlowerRecognition },
-            { path: 'flower-multiple-recognition', name: 'MultipleFlowerRecognition', component: MultipleFlowerRecognition },
-            { path: 'image-processing-flowers-recognition', name: 'IPMultipleFlowerRecognition', component: IPMultipleFlowerRecognition},
-            { path: 'alzheimers-recognition', name: 'AlzheimersRecognition', component: AlzheimersRecognition },
-            { path: 'manage-map', name: 'MapManage', component: MapManage },
-            { path: 'detail-map/:id', name: 'ViewDetailMap', component: ViewDetailMap },
             { path: 'member-account', name: 'MemberAccount', component: MemberAccount },
             { path: 'manage-content', name: 'ManageContent', component: ManageContent },
             { path: 'manage-broadcast', name: 'ManageBroadcast', component: ManageBroadcast },
             { path: 'statistical-channel', name: 'StatisticalChannel', component: StatisticalChannel },
+            // ai + xla 
+            { path: 'flower-recognition', name: 'FlowerRecognition', component: FlowerRecognition },
+            { path: 'flower-multiple-recognition', name: 'MultipleFlowerRecognition', component: MultipleFlowerRecognition },
+            { path: 'image-processing-flowers-recognition', name: 'IPMultipleFlowerRecognition', component: IPMultipleFlowerRecognition},
+            { path: 'alzheimers-recognition', name: 'AlzheimersRecognition', component: AlzheimersRecognition },
+            // geo 
+            { path: 'manage-map', name: 'MapManage', component: MapManage },
+            { path: 'detail-map/:id', name: 'ViewDetailMap', component: ViewDetailMap },
+            // pbl7 
+            { path: 'paper-search', name: 'PaperSearch', component: PaperSearch },
+            { path: 'paper-statistical', name: 'PaperStatistical', component: PaperStatistical },
         ]
     },
     { path: '/view-map', component: ViewMap, name: 'ViewMap'},

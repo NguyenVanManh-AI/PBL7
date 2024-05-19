@@ -179,7 +179,7 @@ export default {
         UpdateInformationChannel
     },
     setup() {
-        document.title = "Member Account | Geomodelling"
+        document.title = "Member Account | PBL7"
     },
     data() {
         return {

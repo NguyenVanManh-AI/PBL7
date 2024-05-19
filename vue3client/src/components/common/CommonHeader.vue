@@ -1,7 +1,7 @@
 <template>
   <div id="header">
     <div class="title">
-      <span><i class="fa-solid fa-robot"></i> Geomodelling</span><span>/</span><span v-html="title"></span>
+      <span><i class="fa-solid fa-layer-group"></i> PBL7</span><span>/</span><span v-html="title"></span>
     </div>
     <div id="contact">
       <li class="list_contact">
@@ -13,9 +13,9 @@
             class="fa-brands fa-linkedin"></i></a>
       </li>
       <div class="email-phone">
-        <li class="contact_email"><a href="mailto:geomodelling.support@gmail.com"><i class="fa-solid fa-envelope"></i> <span
+        <li class="contact_email"><a href="mailto:PBL7.support@gmail.com"><i class="fa-solid fa-envelope"></i> <span
               class="hidde">Email:</span>
-            <span> geomodelling.support@gmail.com</span></a></li>
+            <span> PBL7.support@gmail.com</span></a></li>
         <li class="contact_phone"><a href="tel:+84702518919"><i class="fa-solid fa-phone"></i> <span
               class="hidde">Hotline
               24/7 Phone:</span>
@@ -36,7 +36,7 @@ export default {
   name: "CommonHeader",
   data() {
     return {
-      title: 'Geomodelling',
+      title: 'PBL7',
     }
   },
   mounted() {

@@ -3,7 +3,7 @@
     <template :class="{ loading: true, hide: !isLoading, show: isLoading }">
       <breeding-rhombus-spinner class="loading-component" :animation-duration="2000" :size="65" color="#06C755" />
       <div id="titleLoading">
-        <i class="fa-solid fa-microchip"></i> Geomodelling
+        <i class="fa-solid fa-microchip"></i> PBL7
       </div>
     </template>
     <template id="appMain" :class="{ hide: isLoading, show: !isLoading }">
@@ -26,7 +26,7 @@ export default {
     BreedingRhombusSpinner
   },
   setup() {
-    document.title = "Geomodelling";
+    document.title = "PBL7";
   },
   data() {
     return {

@@ -177,7 +177,7 @@ export default {
     },
 
     setup() {
-        document.title = "Manages Maps | Geomodelling"
+        document.title = "Manages Maps | PBL7"
     },
 
     mounted() {

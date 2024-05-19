@@ -71,7 +71,7 @@ export default {
 		}
 	},
 	setup() {
-		document.title = "Admin Login | Geomodelling";
+		document.title = "Admin Login | PBL7";
 	},
 	mounted() {
 		var appMain = window.document.getElementById('appMain');

@@ -82,7 +82,7 @@ export default {
         }
     },
     setup() {
-        document.title = "Image Processing Multiple Flowers Recognition | Geomodelling";
+        document.title = "Image Processing Multiple Flowers Recognition | PBL7";
     },
     async mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));

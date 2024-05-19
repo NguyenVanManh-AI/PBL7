@@ -312,7 +312,7 @@ export default {
     },
 
     setup() {
-        document.title = "Manages Broadcast - Mutilcast | Geomodelling"
+        document.title = "Manages Broadcast - Mutilcast | PBL7"
     },
 
     mounted() {

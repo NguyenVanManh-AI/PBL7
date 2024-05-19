@@ -79,7 +79,7 @@ export default {
         }
     },
     setup() {
-        document.title = "Multiple Flowers Recognition | Geomodelling";
+        document.title = "Multiple Flowers Recognition | PBL7";
     },
     async mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));

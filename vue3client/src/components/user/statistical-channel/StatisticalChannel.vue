@@ -48,7 +48,7 @@ import DoughnutChart from '@/components/user/statistical-channel/DoughnutChart.v
 export default {
     name: "StatisticalChannel",
     setup() {
-        document.title = "Statistical Channel | Geomodelling";
+        document.title = "Statistical Channel | PBL7";
     },
     components: {
         BarChart,

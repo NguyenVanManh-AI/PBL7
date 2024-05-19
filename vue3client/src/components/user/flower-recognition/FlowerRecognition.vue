@@ -92,7 +92,7 @@ export default {
         }
     },
     setup() {
-        document.title = "Flowers Recognition | Geomodelling";
+        document.title = "Flowers Recognition | PBL7";
     },
     async mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));

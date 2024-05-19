@@ -92,7 +92,7 @@ export default {
         }
     },
     setup() {
-        document.title = "Alzheimers Recognition | Geomodelling";
+        document.title = "Alzheimers Recognition | PBL7";
     },
     async mounted() {
         this.user = JSON.parse(localStorage.getItem('user'));
