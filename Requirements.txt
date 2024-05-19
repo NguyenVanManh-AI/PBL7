@@ -1,0 +1,92 @@
+---------------------------CÁI NÀY LÀM SAU-------------------------------
+
++ DB : Mysql , CSV , SQLite ? 
+
++ Auto crawl data 
+    + Mỗi năm crawl 1 lần 
+        => crawl cho vào db hay cho vào .csv ? 
+
++ Sử dụng Model hiện tại => trích xuất key work của data abstract hiện tại => lưu vào db hoặc .csv 
+    => Để dùng khi search 
+
++ Features 
+    + Biểu đồ (Update liên tục ?) 
+    + Search paper 
+
+
+---------------------------ĐỌC CÁI NÀY LÀM TRƯỚC-------------------------------
++ Hiện tại paper-data.csv chưa cột keyword 
+
++ Data : paper-data.csv => Model ổn => Trích xuất keyword lưu vào cột keyword 
+
++ Auto crawl data 
+    + Mỗi năm crawl 1 lần 
+        => crawl cho vào db hay cho vào .csv 
+        => Đọc CSV => kiểm tra xem năm đó ví dụ 2024 chưa có thì lưu vào lại file csv 
+            => crawl về được abtract + title => trích xuất keyword => lưu vào cột keyword 
+
++ Code API cho chức năng search 
+    > Input đầu "Text" => "Active representation learning for general task space with applications"
+    > CNN Active representation =>  [CNN, Active]
+    > CNN , RNN 
+    + đem đi search trên cột keyword đầu tiên => không có thì làm theo bước tiếp theo (Tăng độ chính xác) 
+    + đem đi search trên toàn bộ tất cả các cột theo kiểu LIKE (contain) => có => trả về 
+    + Nếu không có => sử dụng Model => trích xuất keyword => đem đi search lại theo cách cũ như trên . 
+    + Nếu như đã dùng model để trích xuất keyword rồi đem đi search mà không có nữa => gợi ý top 10 chủ đề hoặc bài viết hoặc gì đó ... 
+
+    + 1 API 
+        + Input 
+            + "search" : "text" 
+
++ API Statistical 
+    + Thống kê xu hướng 
+        + Mặc định : Y = 2023 
+        + Lấy top 10 keyword được trích xuất keyword trong năm Y (kèm số lượng) 
+        + Lấy danh sách 10 năm kề năm Y (kèm số lượng) 
+        => Vẽ ra biểu đồ tăng (cột , đường) của 10 chủ đề này.
+
+        => Có thể chọn năm Y nằm trong khoản (1987 - 2023) . 
+            + Ví dụ chọn 1987 => không có năm kề trước đó thì thôi 
+            + Ví dụ chọn 1990 => 1989 , 1988 , 1987 , có bao nhiêu năm thì lấy bây nhiêu (Tối đa 9 năm) 
+        
+        1 API 
+        + Input 
+            + "year" : "2023" or "năm nào đó thuộc (1987 - 2023)"
+            + Cứ vẽ được hình , còn client lấy về như thế nào thì research 
+
+    + Trực quan hóa biểu đồ đường các keyword liên quan 
+        + Cũng giống như chức năng trên NHƯNG : 
+        + 1 table có phân trang (mỗi trang 20 item (20 keyword)
+            + STT - Năm bắt đầu - Năm kết thúc - Key word Name - Số lượng xuất hiện 
+            + Click vào keyword nào thì lấy ra 10 keyword liên quan => rồi đem đi vẽ hình 
+        + Bên table là biểu đồ trực quan 
+
+        + 2 API
+            + API lấy ra top table  
+                + Input 
+                    + "page" : 1,2,3,4,5,...
+            
+            + API vẽ biểu đồ 
+                + Input 
+                    + "keywork" 
+        + Được thì vẽ thêm wordcloud
+
+    + Thống kê theo kiểu : wordcloud
+    + Biểu diễn 3D của Keyword . Vẽ tương tự như hình này : https://projector.tensorflow.org/ (dùng threejs) (Maybe)
+    + THI XONG HẾT CÒN THỜI GIAN THÌ LÀM THÊM CHỨC NĂNG VẪN CHƯA MUỘN :)) 
+
+
+-----------------------------------------------------------
+keyword [rnn, cnn,...] 
+
+concat 
+
+unique 
+
+for each list keyword (1k) 
+    => năm đầu tiên => bắt đầu từ năm nhỏ nhất => đến khi gặp keyword thì dừng lại 
+    => for datafe (25k)
+    => năm cuối cùng => thì for từ năm sớm nhất (2023) trở về sau (đảo dataframe hoặc dùng cách gì đó) tùy . => => đến khi gặp keyword thì dừng lại 
+
+=> năm đầu tiên + năm cuối cùng keyword đó xuất hiện 
+-----------------------------------------------------------
