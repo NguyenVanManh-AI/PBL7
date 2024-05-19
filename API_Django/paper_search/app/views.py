@@ -64,12 +64,17 @@ def search(request):
     return Response(response_data, status=200)
 
 
+class CustomPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 
 import pandas as pd
 from wordcloud import WordCloud
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
-from wordcloud import WordCloud
 from datetime import datetime
 
 @api_view(['GET'])
@@ -79,12 +84,14 @@ def trend_year(request):
         year = datetime.now().year - 1
 
     url, table = get_url_table(int(year))
+
+    paginator = CustomPagination()
+    result_page = paginator.paginate_queryset(table.to_dict('records'), request)
     response_data = {
         "url": "http://127.0.0.1:8000/static/app/images/wordcloud.png",
-        "table": table,
+        "table": result_page,
     }    
-    # Trả về phản hồi RESTful API
-    return Response(response_data, status=200)
+    return paginator.get_paginated_response(response_data)
 
 def get_url_table(year):
     df = pd.read_csv(PATH)  
@@ -108,6 +115,21 @@ def get_url_table(year):
     if "re" in dic:
         dic["re"] = 0
 
+    if "gith" in dic:
+        dic["gith"] = 0
+    
+    if "ne" in dic:
+        dic["ne"] = 0
+
+    if "\\\\" in dic:
+        dic["\\\\"] = 0
+
+    if "ad" in dic:
+        dic["ad"] = 0
+
+    if "online" in dic:
+        dic["online"] = 0
+
     # Chuyển dictionary thành DataFrame
     df_table = pd.DataFrame(dic.items(), columns=['Word', 'Frequency'])
 
@@ -115,7 +137,7 @@ def get_url_table(year):
     df_table = df_table.sort_values(by='Frequency', ascending=False)
 
     # Lấy 20 từ xuất hiện nhiều nhất
-    top_20_words = df_table.head(20)
+    top_20_words = df_table
 
     # Tạo một dictionary từ DataFrame top_20_words
     word_freq_dict = dict(zip(top_20_words['Word'], top_20_words['Frequency']))
@@ -131,6 +153,7 @@ def get_url_table(year):
     # Lưu sơ đồ wordcloud vào file ảnh
     image_path = URL + 'wordcloud.png'
     plt.savefig(image_path)
+    plt.close()  # Đóng biểu đồ để giải phóng bộ nhớ
     return image_path, top_20_words
   
 @api_view(['GET'])
@@ -160,7 +183,27 @@ def trend_10_year(request):
             for word in words:
                 word = word.strip("'")
                 keyword_count[word] = keyword_count.get(word, 0) + 1
+
+        if "" in keyword_count:
+            keyword_count[""] = 0
+
+        if "re" in keyword_count:
+            keyword_count["re"] = 0
+
+        if "gith" in keyword_count:
+            keyword_count["gith"] = 0
         
+        if "ne" in keyword_count:
+            keyword_count["ne"] = 0
+
+        if "\\\\" in keyword_count:
+            keyword_count["\\\\"] = 0
+
+        if "ad" in keyword_count:
+            keyword_count["ad"] = 0
+
+        if "online" in keyword_count:
+            keyword_count["online"] = 0        
         # Thêm dữ liệu từ khóa và tần suất vào danh sách
         for keyword, freq in keyword_count.items():
             keyword_data_list.append({'Year': y, 'Keyword': keyword, 'Frequency': freq})
@@ -218,6 +261,26 @@ def plot_keyword_trends(keywords, csv_path, end_year):
                 if word in keyword_count:
                     keyword_count[word] += 1
         
+        if "" in keyword_count:
+            keyword_count[""] = 0
+
+        if "re" in keyword_count:
+            keyword_count["re"] = 0
+
+        if "gith" in keyword_count:
+            keyword_count["gith"] = 0
+        
+        if "ne" in keyword_count:
+            keyword_count["ne"] = 0
+
+        if "\\\\" in keyword_count:
+            keyword_count["\\\\"] = 0
+
+        if "ad" in keyword_count:
+            keyword_count["ad"] = 0
+
+        if "online" in keyword_count:
+            keyword_count["online"] = 0   
         # Thêm dữ liệu từ khóa và tần suất vào danh sách
         for keyword, freq in keyword_count.items():
             keyword_data_list.append({'Year': y, 'Keyword': keyword, 'Frequency': freq})
@@ -267,16 +330,30 @@ def euclidean_distance(a, b):
     return np.linalg.norm(a - b)
 
 def top_10(keyword, reconstructed_dict):
-#   return [
-#     'transformer', 'vitae transformer', 'adapter', '3dversarial generator', 
-#     'quadattack', 'retvecbedding model', 'beamrecuionly', 
-#     'cnn', 'noisy power methodm', 'collaborative transformer'
-# ]
-
 
   embed_keyword = reconstructed_dict[keyword]
   distance_arrs = {}
   for key, value in reconstructed_dict.items():
+    # if key == "":
+    #     continue
+
+    # if key == "re":
+    #     continue
+
+    # if key == "gith":
+    #     continue
+
+    # if key == "ne":
+    #     continue
+
+    # if key == "\\\\":
+    #     continue
+
+    # if key == "ad":
+    #     continue
+
+    # if key == "online":
+    #     continue
     distance_arrs[key] = euclidean_distance(embed_keyword, value)
     # print(distance_arrs[key])
   sorted_dict = dict(sorted(distance_arrs.items(), key=lambda item: item[1]))
