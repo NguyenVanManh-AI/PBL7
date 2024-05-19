@@ -1,42 +1,92 @@
 <template>
     <div id="main">
         <div>
-            <h3 class="title-channel"><i class="fa-solid fa-file-word"></i> Search scientific articles </h3>
+            <h3 class="title-channel mb-2">
+                <i class="fa-solid fa-file-word"></i> Search scientific articles
+            </h3>
         </div>
-        <div class="mt-2">
-
+        <div class="container-result">
+            <div class="mt-2" id="result">
+                <TypedText v-for="(text, index) in texts" :key="index" :content="text" />
+            </div>
+        </div>
+        <div class="container-search">
+            <input @keyup.enter="searchPaper" v-model="searchQuery" type="text" class="form-control"
+                id="formGroupExampleInput" placeholder="Search paper">
         </div>
     </div>
 </template>
 
 <script>
-// import ModelRequest from '@/restful/ModelRequest';
 import config from '@/config';
-import useEventBus from '@/composables/useEventBus'
+import ModelRequest from '@/restful/ModelRequest';
+import useEventBus from '@/composables/useEventBus';
 const { emitEvent } = useEventBus();
+import TypedText from '@/components/user/pbl7/TypedText.vue';
 
 export default {
     name: "PaperSearch",
+    components: {
+        TypedText
+    },
     data() {
         return {
             config: config,
+            searchQuery: '',
+            texts: []
         }
     },
     mounted() {
         emitEvent('eventTitleHeader', 'Paper Search');
         document.title = "Paper Search | PBL7";
     },
-    beforeUnmount() {
-
-    },
     methods: {
-
+        searchPaper: async function () { 
+            try {
+                const { results } = await ModelRequest.get('search?search='+this.searchQuery, true);
+                this.texts.push({ type: 'question', contentvalue: this.searchQuery });
+                results.forEach(element => {
+                    this.texts.push({ type: 'result', contentvalue: element });
+                });
+                this.searchQuery = '';
+                emitEvent('eventSuccess', 'Search paper success !');
+            } catch {
+                emitEvent('eventError', 'Search paper fail !');
+            }
+        },
     }
 }
 </script>
 
-
 <style scoped>
+
+
+.container-result {
+    width: 100%;
+    height: 530px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#main {
+    min-height: 88vh;
+    position: relative;
+}
+
+.container-search {
+    position: absolute;
+    width: calc(100% - 40px);
+    margin-top: 20px;
+    bottom: 10px;
+}
+
+.container-search input {
+    display: inline-block;
+    border-radius: 20px;
+    background-color: #F4F4F4;
+}
+
+
 .title-channel {
     font-size: 19px;
     color: var(--user-color);

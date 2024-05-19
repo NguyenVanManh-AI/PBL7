@@ -29,6 +29,32 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080', # vuejs 
+    'http://localhost:8089', # laravel 
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with'
+]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,6 +63,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'app.apps.AppConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +77,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'paper_search.urls'
