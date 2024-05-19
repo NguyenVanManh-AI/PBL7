@@ -49,7 +49,7 @@
             + Ví dụ chọn 1987 => không có năm kề trước đó thì thôi 
             + Ví dụ chọn 1990 => 1989 , 1988 , 1987 , có bao nhiêu năm thì lấy bây nhiêu (Tối đa 9 năm) 
         
-        1 API 
+        1 API-1 
         + Input 
             + "year" : "2023" or "năm nào đó thuộc (1987 - 2023)"
             + Cứ vẽ được hình , còn client lấy về như thế nào thì research 
@@ -57,16 +57,16 @@
     + Trực quan hóa biểu đồ đường các keyword liên quan 
         + Cũng giống như chức năng trên NHƯNG : 
         + 1 table có phân trang (mỗi trang 20 item (20 keyword)
-            + STT - Năm bắt đầu - Năm kết thúc - Key word Name - Số lượng xuất hiện 
+            + STT - Key word Name - Số lượng xuất hiện 
             + Click vào keyword nào thì lấy ra 10 keyword liên quan => rồi đem đi vẽ hình 
         + Bên table là biểu đồ trực quan 
 
         + 2 API
-            + API lấy ra top table  
+            + API lấy ra top table  (API-2) 
                 + Input 
                     + "page" : 1,2,3,4,5,...
             
-            + API vẽ biểu đồ 
+            + API vẽ biểu đồ (API-3) 
                 + Input 
                     + "keywork" 
         + Được thì vẽ thêm wordcloud
