@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 import csv
+import torch
 
 PATH = './app/papers_data_done.csv'
 PATH2 = './app/output.csv'
