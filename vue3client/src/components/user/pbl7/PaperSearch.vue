@@ -7,8 +7,12 @@
         </div>
         <div class="container-result">
             <div class="mt-2" id="result">
-                <TypedText v-for="(text, index) in texts" :key="index" :content="text" />
+                <TypedText v-for="(text, index) in texts" :nth="index" :key="index" :content="text" />
             </div>
+        </div>
+        <div v-if="texts.length == 0" class="intro-search">
+            <i class="fa-solid fa-lightbulb"></i> Search for a scientific article or a topic, the system will suggest
+            related articles !
         </div>
         <div class="container-search">
             <input @keyup.enter="searchPaper" v-model="searchQuery" type="text" class="form-control"
@@ -41,31 +45,59 @@ export default {
         document.title = "Paper Search | PBL7";
     },
     methods: {
-        searchPaper: async function () { 
+        // với cách này đã cải thiện tốc độ gõ 
+        async searchPaper() {
             try {
-                const { results } = await ModelRequest.get('search?search='+this.searchQuery, true);
+                const { results } = await ModelRequest.get('search?search=' + this.searchQuery, true);
                 this.texts.push({ type: 'question', contentvalue: this.searchQuery });
-                results.forEach(element => {
-                    this.texts.push({ type: 'result', contentvalue: element });
-                });
                 this.searchQuery = '';
-                emitEvent('eventSuccess', 'Search paper success !');
+                this.addResultsSequentially(results);
+                emitEvent('eventSuccess', 'Search paper success!');
             } catch {
-                emitEvent('eventError', 'Search paper fail !');
+                emitEvent('eventError', 'Search paper fail!');
             }
         },
+        async addResultsSequentially(results) {
+
+            for (const element of results) {
+                this.scrollToBottom();
+                this.texts.push({ type: 'result', contentvalue: element });
+                await this.wait(2000); // Đợi 0.5 giây trước khi thêm phần tử tiếp theo
+            }
+            this.scrollToBottom();
+        },
+        wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        scrollToBottom() { // hiệu ứng cuộn xuống 
+            this.$nextTick(() => {
+                const container = this.$el.querySelector('.container-result');
+                container.scrollTop = container.scrollHeight;
+            });
+        }
     }
 }
 </script>
 
 <style scoped>
-
+.intro-search {
+    position: absolute;
+    font-weight: bold;
+    font-size: 30px;
+    top: -10%;
+    text-align: center;
+    width: 100%;
+    padding: 20%;
+    color: silver;
+}
 
 .container-result {
     width: 100%;
     height: 530px;
     overflow: hidden;
     overflow-y: scroll;
+    scroll-behavior: smooth;
+    /* giúp cho hiệu ứng cuộn xuống mượt hơn */
 }
 
 #main {

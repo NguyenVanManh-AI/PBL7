@@ -1,22 +1,22 @@
 <template>
-  <div class="container-question" v-if="this.content.type != 'result'">
-    <p ref="additionalContent" class="additional-content"></p>
+  <div class="container-question" v-if="content.type != 'result'">
+    <p :ref="'additionalContent' + nth" class="additional-content"></p>
   </div>
-  <div v-if="this.content.type == 'result'" :id="typedId" class="paper-details">
-    <h2 ref="title"></h2>
-    <p ref="authors"></p>
-    <p ref="year"></p>
-    <p ref="volume"></p>
-    <p ref="pages"></p>
-    <p ref="status"></p>
-    <p ref="bookTitle"></p>
-    <p ref="editors"></p>
-    <p ref="publishers"></p>
-    <p ref="mainUrl"></p>
-    <p ref="paperUrl"></p>
-    <p ref="supplementalUrl"></p>
-    <p ref="abstract"></p>
-    <p ref="keywords"></p>
+  <div v-if="content.type == 'result'" :id="typedId" class="paper-details">
+    <p class="p-title"><span style='font-weight:bold'><i class="fa-solid fa-bookmark"></i></span> <span :ref="'title' + nth"></span></p>
+    <p class="p-authors" :ref="'authors' + nth"></p>
+    <p class="p-year" :ref="'year' + nth"></p>
+    <p class="p-volume" :ref="'volume' + nth"></p>
+    <p class="p-pages" :ref="'pages' + nth"></p>
+    <p class="p-status" :ref="'status' + nth"></p>
+    <p class="p-bookTitle" :ref="'bookTitle' + nth"></p>
+    <p class="p-editors" :ref="'editors' + nth"></p>
+    <p class="p-publishers" :ref="'publishers' + nth"></p>
+    <p class="p-mainUrl" :ref="'mainUrl' + nth"></p>
+    <p class="p-paperUrl" :ref="'paperUrl' + nth"></p>
+    <p class="p-supplementalUrl" :ref="'supplementalUrl' + nth"></p>
+    <p class="p-abstract" :ref="'abstract' + nth"></p>
+    <p class="p-keywords" :ref="'keywords' + nth"></p>
   </div>
 </template>
 
@@ -27,6 +27,7 @@ export default {
   name: "TypedText",
   props: {
     content: Object,
+    nth: Number,
   },
   data() {
     return {
@@ -34,43 +35,46 @@ export default {
     };
   },
   mounted() {
-    // Kiểm tra nếu content là kiểu result thì hiển thị thông tin của kết quả
     if (this.content.type === 'result') {
       this.showResultDetails();
     } else {
       this.showAdditionalContent();
-      // Nếu content không phải là kiểu result, có thể là câu hỏi hoặc loại khác, bạn có thể xử lý tùy ý
     }
   },
   methods: {
     showAdditionalContent() {
-      if (this.$refs.additionalContent) {
-        this.$refs.additionalContent.innerHTML  = '<i class="fa-solid fa-circle-question"></i> ' + this.content.contentvalue;
+      if (this.$refs['additionalContent' + this.nth]) {
+        this.$refs['additionalContent' + this.nth].innerHTML = '<i class="fa-solid fa-circle-question"></i> ' + this.content.contentvalue;
       }
     },
     showResultDetails() {
-      new TypeIt(this.$refs.title, { speed: 1, lifelike: false, cursor: false })
+      new TypeIt(this.$refs['title' + this.nth], { speed: 1, lifelike: true, cursor: false })
         .type(this.content.contentvalue.Title)
-        .exec(() => new TypeIt(this.$refs.authors, { speed: 1, lifelike: false, cursor: false }).type(`Authors: ${this.content.contentvalue.Authors}`).go())
-        .exec(() => new TypeIt(this.$refs.year, { speed: 1, lifelike: false, cursor: false }).type(`Year: ${this.content.contentvalue.Year}`).go())
-        // .exec(() => new TypeIt(this.$refs.volume, { speed: 1, lifelike: false, cursor: false }).type(`Volume: ${this.content.contentvalue.Volume}`).go())
-        // .exec(() => new TypeIt(this.$refs.pages, { speed: 1, lifelike: false, cursor: false }).type(`Pages: ${this.content.contentvalue.Pages}`).go())
-        .exec(() => new TypeIt(this.$refs.status, { speed: 1, lifelike: false, cursor: false }).type(`Status: ${this.content.contentvalue.Status}`).go())
-        .exec(() => new TypeIt(this.$refs.bookTitle, { speed: 1, lifelike: false, cursor: false }).type(`Book Title: ${this.content.contentvalue['Book Title']}`).go())
-        .exec(() => new TypeIt(this.$refs.editors, { speed: 1, lifelike: false, cursor: false }).type(`Editors: ${this.content.contentvalue.Editors}`).go())
-        .exec(() => new TypeIt(this.$refs.publishers, { speed: 1, lifelike: false, cursor: false }).type(`Publishers: ${this.content.contentvalue.Publishers}`).go())
-        .exec(() => new TypeIt(this.$refs.mainUrl, { speed: 1, lifelike: false, cursor: false }).type(`Main Url: <a style='color:#0069D9' href="${this.content.contentvalue['Main Url']}">${this.content.contentvalue['Main Url']}</a>`).go())
-        .exec(() => new TypeIt(this.$refs.paperUrl, { speed: 1, lifelike: false, cursor: false }).type(`Paper Url: <a style='color:#0069D9' href="${this.content.contentvalue['Paper Url']}">${this.content.contentvalue['Paper Url']}</a>`).go())
-        .exec(() => new TypeIt(this.$refs.supplementalUrl, { speed: 1, lifelike: false, cursor: false }).type(`Supplemental Url: <a style='color:#0069D9' href="${this.content.contentvalue['Supplemental Url']}">${this.content.contentvalue['Supplemental Url']}</a>`).go())
-        // .exec(() => new TypeIt(this.$refs.abstract, { speed: 1, lifelike: false, cursor: false }).type(`Abstract: ${this.content.contentvalue.Abstract}`).go())
-        // .exec(() => new TypeIt(this.$refs.keywords, { speed: 1, lifelike: false, cursor: false }).type(`Keywords: ${this.content.contentvalue.Keywords}`).go())
+        .exec(() => new TypeIt(this.$refs['authors' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Authors </span>: ${this.content.contentvalue.Authors}`).go())
+        .exec(() => new TypeIt(this.$refs['year' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Year </span>: ${this.content.contentvalue.Year}`).go())
+        .exec(() => new TypeIt(this.$refs['status' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Status </span>: ${this.content.contentvalue.Status}`).go())
+        .exec(() => new TypeIt(this.$refs['bookTitle' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Book Title </span>:  ${this.content.contentvalue['Book Title']}`).go())
+        .exec(() => new TypeIt(this.$refs['editors' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Editors </span>: ${this.content.contentvalue.Editors}`).go())
+        .exec(() => new TypeIt(this.$refs['publishers' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Publishers </span>: ${this.content.contentvalue.Publishers}`).go())
+        .exec(() => new TypeIt(this.$refs['mainUrl' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Main Url </span>: <a target="_blank" style='color:#0069D9' href="${this.content.contentvalue['Main Url']}">${this.content.contentvalue['Main Url']}</a>`).go())
+        .exec(() => new TypeIt(this.$refs['paperUrl' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Paper Url </span>: <a target="_blank" style='color:#0069D9' href="${this.content.contentvalue['Paper Url']}">${this.content.contentvalue['Paper Url']}</a>`).go())
+        .exec(() => new TypeIt(this.$refs['supplementalUrl' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Supplemental Url </span>: <a target="_blank" style='color:#0069D9' href="${this.content.contentvalue['Supplemental Url']}">${this.content.contentvalue['Supplemental Url']}</a>`).go())
+        .exec(() => new TypeIt(this.$refs['abstract' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Abstract </span>: ${this.content.contentvalue.Abstract}`).go())
+        .exec(() => new TypeIt(this.$refs['keywords' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Keywords </span>: ${this.content.contentvalue.Keywords}`).go())
         .go();
     }
   }
 };
 </script>
 
+
 <style scoped>
+.p-title {
+  color: #28A745;
+  font-weight: bold;
+  font-size: 20px;
+}
+
 .container-question {
   width: 100%;
   display: flex;
