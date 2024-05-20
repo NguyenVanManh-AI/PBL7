@@ -11,3 +11,4 @@ __pycache__/
 # Ignore any local settings files
 local_settings.py
 /paper_search/app/output.csv
+/paper_search/app/static/app/images
