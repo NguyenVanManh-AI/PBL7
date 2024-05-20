@@ -64,6 +64,7 @@
         + 2 API
             + API lấy ra top table  (API-2) 
                 + Input 
+                    + "year" ??? (hình như cái này thêm vào để đếm tần xuất) 
                     + "page" : 1,2,3,4,5,...
             
             + API vẽ biểu đồ (API-3) 
