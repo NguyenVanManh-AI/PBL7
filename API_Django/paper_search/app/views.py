@@ -244,7 +244,7 @@ def find_keyword(abstract):
 @api_view(['GET'])
 def search(request):
     text = request.query_params.get('search', 'cnn')  # Lấy tham số search từ query params
-    
+    keywords = []
     search_by = "search_by_keywords"
     search_result = search_by_keywords(text, PATH)
     if search_result == []:
@@ -254,6 +254,7 @@ def search(request):
     if search_result == []:
         search_by = "search_by_model"
         texts =find_keyword(text)
+        keywords = texts
         print("trich xuat keyword:", texts)
 
         for text in texts:
@@ -270,6 +271,7 @@ def search(request):
     # Tạo dictionary chứa thông tin phân trang và kết quả tìm kiếm
     response_data = {
         'search_by' : search_by,
+        'keywords': keywords,
         'count': paginator.page.paginator.count,  # Tổng số mục
         'next': paginator.get_next_link(),        # Link tới trang kế tiếp (nếu có)
         'previous': paginator.get_previous_link(),# Link tới trang trước đó (nếu có)
@@ -532,15 +534,15 @@ import numpy as np
 
 reconstructed_dict = {}
 
-with open("./app/output.csv", "r", encoding='utf-8') as csvfile:
-    csvreader = csv.reader(csvfile)
-    for row in csvreader:
-        key = row[0]
-        # print(row[1:][0])
-        # Chuyển đổi giá trị từ danh sách sang tensor
-        row_data = ast.literal_eval(row[1:][0])
-        values = list(map(float, row_data))  # Assuming the values were floats
-        reconstructed_dict[key] = torch.tensor(values)
+# with open("./app/output.csv", "r", encoding='utf-8') as csvfile:
+#     csvreader = csv.reader(csvfile)
+#     for row in csvreader:
+#         key = row[0]
+#         # print(row[1:][0])
+#         # Chuyển đổi giá trị từ danh sách sang tensor
+#         row_data = ast.literal_eval(row[1:][0])
+#         values = list(map(float, row_data))  # Assuming the values were floats
+#         reconstructed_dict[key] = torch.tensor(values)
 
 def euclidean_distance(a, b):
     return np.linalg.norm(a - b)

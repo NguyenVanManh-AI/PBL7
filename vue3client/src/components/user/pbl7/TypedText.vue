@@ -1,9 +1,14 @@
 <template>
-  <div class="container-question" v-if="content.type != 'result'">
-    <p :ref="'additionalContent' + nth" class="additional-content"></p>
+  <div class="container-question" v-if="content.type == 'question'">
+    <p class="additional-content"><i class="fa-solid fa-circle-question"></i> {{ content.contentvalue }}</p>
+  </div>
+  <div class="search-by" v-if="content.type == 'search_by'">
+    <p class="search-line"></p>
+    <p class="search-by-content">{{ handleCaseNotResult(content.valueSearchBy) }}</p>
   </div>
   <div v-if="content.type == 'result'" :id="typedId" class="paper-details">
-    <p class="p-title"><span style='font-weight:bold'><i class="fa-solid fa-bookmark"></i></span> <span :ref="'title' + nth"></span></p>
+    <p :content="handleCaseNotResult(content.contentvalue.search_by)" v-tippy class="p-title"><span style='font-weight:bold'><i class="fa-solid fa-bookmark"></i></span> <span
+        :ref="'title' + nth"></span></p>
     <p class="p-authors" :ref="'authors' + nth"></p>
     <p class="p-year" :ref="'year' + nth"></p>
     <p class="p-volume" :ref="'volume' + nth"></p>
@@ -15,13 +20,31 @@
     <p class="p-mainUrl" :ref="'mainUrl' + nth"></p>
     <p class="p-paperUrl" :ref="'paperUrl' + nth"></p>
     <p class="p-supplementalUrl" :ref="'supplementalUrl' + nth"></p>
-    <p class="p-abstract" :ref="'abstract' + nth"></p>
-    <p class="p-keywords" :ref="'keywords' + nth"></p>
+    <div class="card">
+      <div class="card-header" :id="'accordion' + typedId">
+        <h5 class="mb-0">
+          <button @click="tracking(content.contentvalue.ID)" class="btn btn-link" data-toggle="collapse" :data-target="'#card' + typedId" aria-expanded="true"
+            aria-controls="collapseOne">
+            Show More
+          </button>
+        </h5>
+      </div>
+      <div :id="'card' + typedId" class="collapse" aria-labelledby="headingOne"
+        :data-parent="'#accordion' + typedId">
+        <div class="card-body">
+          <p class="p-abstract" :ref="'abstract' + nth"><span style="font-weight:bold"><i class="fa-solid fa-quote-left"></i> Abstract </span>: {{ content.contentvalue.Abstract }}</p>
+          <p class="p-keywords" :ref="'keywords' + nth"><span style="font-weight:bold"><i class="fa-solid fa-key"></i> Keywords </span>: {{ content.contentvalue.Keywords }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import TypeIt from "typeit";
+// const { emitEvent } = useEventBus();
+// import ModelRequest from '@/restful/ModelRequest';
+// import useEventBus from '@/composables/useEventBus';
 
 export default {
   name: "TypedText",
@@ -35,18 +58,12 @@ export default {
     };
   },
   mounted() {
+    console.log(this.content);
     if (this.content.type === 'result') {
       this.showResultDetails();
-    } else {
-      this.showAdditionalContent();
-    }
+    } 
   },
   methods: {
-    showAdditionalContent() {
-      if (this.$refs['additionalContent' + this.nth]) {
-        this.$refs['additionalContent' + this.nth].innerHTML = '<i class="fa-solid fa-circle-question"></i> ' + this.content.contentvalue;
-      }
-    },
     showResultDetails() {
       new TypeIt(this.$refs['title' + this.nth], { speed: 1, lifelike: true, cursor: false })
         .type(this.content.contentvalue.Title)
@@ -59,9 +76,31 @@ export default {
         .exec(() => new TypeIt(this.$refs['mainUrl' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Main Url </span>: <a target="_blank" style='color:#0069D9' href="${this.content.contentvalue['Main Url']}">${this.content.contentvalue['Main Url']}</a>`).go())
         .exec(() => new TypeIt(this.$refs['paperUrl' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Paper Url </span>: <a target="_blank" style='color:#0069D9' href="${this.content.contentvalue['Paper Url']}">${this.content.contentvalue['Paper Url']}</a>`).go())
         .exec(() => new TypeIt(this.$refs['supplementalUrl' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Supplemental Url </span>: <a target="_blank" style='color:#0069D9' href="${this.content.contentvalue['Supplemental Url']}">${this.content.contentvalue['Supplemental Url']}</a>`).go())
-        .exec(() => new TypeIt(this.$refs['abstract' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Abstract </span>: ${this.content.contentvalue.Abstract}`).go())
-        .exec(() => new TypeIt(this.$refs['keywords' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Keywords </span>: ${this.content.contentvalue.Keywords}`).go())
+        // .exec(() => new TypeIt(this.$refs['abstract' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Abstract </span>: ${this.content.contentvalue.Abstract}`).go())
+        // .exec(() => new TypeIt(this.$refs['keywords' + this.nth], { speed: 1, lifelike: true, cursor: false }).type(`<span style='font-weight:bold'>Keywords </span>: ${this.content.contentvalue.Keywords}`).go())
         .go();
+    },
+    handleCaseNotResult(inputText) {
+      var resultText = inputText
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+      return resultText;
+    },
+    async tracking(id_paper) {
+      if (this.content.contentvalue.keywords.length > 0) { // phải là search by model 
+        var submitData = {
+          id_paper: id_paper,
+          keywords: this.content.contentvalue.keywords
+        }
+        console.log(submitData);
+        // try {
+        //   const { data, messages } = await ModelRequest.post('tracking', submitData, false);
+        //   emitEvent('eventSuccess', 'Update data tracking success !');
+        // } catch (error) {
+        //   console.error('Update data tracking false !', error);
+        // }
+      }
     }
   }
 };
@@ -69,6 +108,43 @@ export default {
 
 
 <style scoped>
+
+.search-by {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.search-line {
+  background-color: #007BFF;
+  height: 2px;
+  width: 60%;
+  position: absolute;
+  top: 12px;
+}
+
+.search-by-content {
+  color: #007BFF;
+  z-index: 1;
+  text-align: center;
+  width: fit-content;
+  /* border: 1px solid #ddd; */
+  background-color: white;
+  padding: 0px 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 16%;
+}
+
+
+.card-header {
+  padding: 0 !important;
+}
+
 .p-title {
   color: #28A745;
   font-weight: bold;
@@ -91,6 +167,7 @@ export default {
   margin-bottom: 10px;
   font-weight: bold;
   border-radius: 10px;
+  max-width: 50%;
 }
 
 .paper-details {

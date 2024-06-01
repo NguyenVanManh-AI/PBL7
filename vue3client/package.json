@@ -29,7 +29,7 @@
     "epic-spinners": "^2.0.0",
     "express": "^4.18.1",
     "install": "^0.13.0",
-    "jquery": "^3.7.1",
+    "jquery": "^3.6.0",
     "jquery-ui-dist": "^1.13.2",
     "mdb-vue-ui-kit": "^3.0.0",
     "moment": "^2.30.1",

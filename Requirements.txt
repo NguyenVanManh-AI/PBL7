@@ -21,7 +21,11 @@
                 => Dùng file này + Kết hợp với 3 bộ dataset trong bài báo => để huấn luyện để => Thu được model mới 
                 => Thu được model mới => Từ Data Crawl => thu được papers_data_done.csv mới (trích xuất lại keyword mới cho tập data crawl) 
 
+    + VẤN ĐỀ PHÁT SINH : Nếu như không phải là search by model thì không trả về mảng keyword => không tracking được . 
+
     + CẦN SỬA LẠI FILE : Data crawl được và file papers_data_done.csv , thêm ID vào cho nó để client chỉ truyền lên ID server chỉ cần query ID để lấy ra thông tin 
+    => ĐÃ THÊM CỘT ID VÀO FILE papers_data_done.csv , còn file crawl được thì chưa (CẦN LÀM VIỆC CẨN THẬN VỚI CỘT ID NÀY) 
+
     + Input 
         + ID của bài báo 
         + Keyword 

@@ -48,22 +48,26 @@ export default {
         // với cách này đã cải thiện tốc độ gõ 
         async searchPaper() {
             try {
-                const { results } = await ModelRequest.get('search?search=' + this.searchQuery, true);
+                var { results, search_by, keywords } = await ModelRequest.get('search?search=' + this.searchQuery, true);
                 this.texts.push({ type: 'question', contentvalue: this.searchQuery });
+                this.texts.push({ type: 'search_by', valueSearchBy: search_by });
                 this.searchQuery = '';
-                this.addResultsSequentially(results);
+                this.addResultsSequentially(results, search_by, keywords);
                 emitEvent('eventSuccess', 'Search paper success!');
             } catch {
                 emitEvent('eventError', 'Search paper fail!');
             }
         },
-        async addResultsSequentially(results) {
+        async addResultsSequentially(results, search_by, keywords) {
 
-            for (const element of results) {
+            for (var element of results) {
                 this.scrollToBottom();
+                element.search_by = search_by;
+                element.keywords = keywords;
                 this.texts.push({ type: 'result', contentvalue: element });
-                await this.wait(2000); // Đợi 0.5 giây trước khi thêm phần tử tiếp theo
+                await this.wait(300); // Đợi 0.5 giây trước khi thêm phần tử tiếp theo
             }
+            await this.wait(1000);
             this.scrollToBottom();
         },
         wait(ms) {
