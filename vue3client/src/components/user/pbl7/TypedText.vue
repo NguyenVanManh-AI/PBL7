@@ -88,14 +88,20 @@ export default {
       return resultText;
     },
     async tracking(id_paper) {
+      var arr_keys = [];
+      var abstractStr = this.content.contentvalue.Abstract;
+      var keywordsArr = this.content.contentvalue.Keywords;
       if (this.content.contentvalue.keywords.length > 0) { // phải là search by model 
+        arr_keys = Array.from(this.content.contentvalue.keywords);
+        let filteredKeys = arr_keys.filter(item => 
+            (abstractStr.includes(item) || keywordsArr.includes(item)) // chỉ giữ lại những keyword có trong bài báo được click
+        );
         var submitData = {
           id_paper: id_paper,
-          keywords: Array.from(this.content.contentvalue.keywords)
+          keywords: filteredKeys
         }
       }
       if (this.content.contentvalue.search_by == 'search_by_keywords') { // hoặc search by keyword 
-        var arr_keys = [];
         arr_keys.push(this.content.contentvalue.question);
         submitData = {
           id_paper: id_paper,
