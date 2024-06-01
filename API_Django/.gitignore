@@ -13,3 +13,6 @@ local_settings.py
 /paper_search/app/output.csv
 /paper_search/app/static/app/images
 /paper_search/app/NO_BERT_WVFT_256_155_600_full.pth 
+/paper_search/app/static/app/images
+/API_Django/paper_search/app/static/app/images/*
+
