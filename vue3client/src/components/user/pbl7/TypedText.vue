@@ -91,16 +91,24 @@ export default {
       if (this.content.contentvalue.keywords.length > 0) { // phải là search by model 
         var submitData = {
           id_paper: id_paper,
-          keywords: this.content.contentvalue.keywords
+          keywords: Array.from(this.content.contentvalue.keywords)
         }
-        console.log(submitData);
-        // try {
-        //   const { data, messages } = await ModelRequest.post('tracking', submitData, false);
-        //   emitEvent('eventSuccess', 'Update data tracking success !');
-        // } catch (error) {
-        //   console.error('Update data tracking false !', error);
-        // }
       }
+      if (this.content.contentvalue.search_by == 'search_by_keywords') { // hoặc search by keyword 
+        var arr_keys = [];
+        arr_keys.push(this.content.contentvalue.question);
+        submitData = {
+          id_paper: id_paper,
+          keywords: arr_keys
+        }
+      }
+      console.log(submitData);
+      // try {
+      //   const { data, messages } = await ModelRequest.post('tracking', submitData, false);
+      //   emitEvent('eventSuccess', 'Update data tracking success !');
+      // } catch (error) {
+      //   console.error('Update data tracking false !', error);
+      // }
     }
   }
 };
