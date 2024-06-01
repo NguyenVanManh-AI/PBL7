@@ -1,3 +1,36 @@
+---------------------------New TASK-------------------------------
++ File 
+    + output.csv : Từ liên quan 
+    + papers_data_done.csv : Dữ liệu paper crawl được và thêm cột keyword do model trích xuất 
+
++ API : Tracking dữ liệu mới của người dùng để train lại model 
+    + Xây dựng API lưu dữ liệu tracking được từ người dùng 
+        + Ban đầu kết quả trả về là abtract của các bài báo tương ứng với danh sách keywords là được model trích xuất (khá là nhiều và chưa biết chính xác hay không) 
+        + Bây giờ tracking dữ liệu người dùng . 
+            + Người dùng search text => trích suất keyword từ text đó . Ví dụ search : "Convolutional neural network (CNN) is a regularized type of feed-forward neural network that learns feature engineering by itself via filters"
+                => keyword được trích xuất là : ['convolutional neural network', 'feed forward neural network engineering'] (keyword B) 
+
+            + Lặp qua từng keyword => kiểm tra keyword đó có trong Title , Abtract ,... (nội dung của bài báo) thì mới thực hiện bước sau 
+            + Người dùng click vào bài báo A 
+                => Thêm một record mới : Bài báo A + Keyword B ['convolutional neural network', 'feed forward neural network engineering']
+            
+            + LẦN SAU : Nếu người dùng click search text khác => trích xuất ra keyword C => mà vẫn click vào bài báo này => UPDATE keyword C vào ta sẽ có 
+                + Bài báo A + Keyword B + C . Nói chung là đã có bài báo mà thêm keyword nào thì update lại keyword 
+            
+            + SAU CÙNG : Sau khi thu tập được file tracking.csv 
+                => Dùng file này + Kết hợp với 3 bộ dataset trong bài báo => để huấn luyện để => Thu được model mới 
+                => Thu được model mới => Từ Data Crawl => thu được papers_data_done.csv mới (trích xuất lại keyword mới cho tập data crawl) 
+
+    + CẦN SỬA LẠI FILE : Data crawl được và file papers_data_done.csv , thêm ID vào cho nó để client chỉ truyền lên ID server chỉ cần query ID để lấy ra thông tin 
+    + Input 
+        + ID của bài báo 
+        + Keyword 
+        => Lưu thông tin bài báo và keyword để trở thành dữ liệu train 
+
+
+    + Dữ liệu tracking sẽ được crawl và train lại model sau mỗi tháng 
+    + Dữ liệu crawl bài báo sẽ được crawl sau mỗi năm
+
 ---------------------------CÁI NÀY LÀM SAU-------------------------------
 
 + DB : Mysql , CSV , SQLite ? 
