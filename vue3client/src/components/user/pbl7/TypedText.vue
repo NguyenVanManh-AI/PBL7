@@ -89,12 +89,12 @@ export default {
     },
     async tracking(id_paper) {
       var arr_keys = [];
-      var abstractStr = this.content.contentvalue.Abstract;
-      var keywordsArr = this.content.contentvalue.Keywords;
+      var totalStr = this.content.contentvalue.Abstract + this.content.contentvalue.Title
+      totalStr = totalStr.toLowerCase();
       if (this.content.contentvalue.keywords.length > 0) { // phải là search by model 
         arr_keys = Array.from(this.content.contentvalue.keywords);
         let filteredKeys = arr_keys.filter(item => 
-            (abstractStr.includes(item) || keywordsArr.includes(item)) // chỉ giữ lại những keyword có trong bài báo được click
+            (totalStr.includes(item)) // chỉ giữ lại những keyword có trong bài báo được click
         );
         var submitData = {
           id_paper: id_paper,
