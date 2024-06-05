@@ -340,17 +340,16 @@ import ast
 import csv
 import torch
 
-def crawl_data(start_year, end_year):
-    # Giả sử đây là hàm crawl dữ liệu
-    print(f"Đang crawl dữ liệu từ năm {start_year} đến năm {end_year}")
 
 def daily_task():
+    print("thuc hien daily_task")
     # Lấy năm hiện tại
     current_year = datetime.now().year
     # Lấy năm trước
     previous_year = current_year - 1
     # Kiểm tra nếu hôm nay là ngày đầu tiên của năm
     if datetime.now().strftime('%m-%d') == '01-01':
+        print("Have crawl_data")
         crawl_data(previous_year, previous_year)
         
         # read file csv được crawl bởi mạnh
@@ -445,6 +444,7 @@ schedule.every().day.at("08:00").do(daily_task)
 
 # Vòng lặp để tiếp tục kiểm tra và chạy các tác vụ được lập lịch
 while True:
+    print("Auto Crawl Start 08:00 AM")
     schedule.run_pending()
     time.sleep(60)  # Ngủ trong 1 phút trước khi kiểm tra lại lịch
 
