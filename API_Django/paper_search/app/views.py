@@ -602,3 +602,66 @@ def trend_10_keywords(request):
     return Response(response_data, status=200)  
 
 
+####################################################################
+#API tracking
+PATH_TRACKING = './app/tracking.csv'
+import csv
+
+def add_to_tracking_csv(id_paper, keywords):
+    # Đọc dữ liệu từ file tracking.csv
+    rows = []
+    try:
+        with open(PATH_TRACKING, 'r') as file:
+            reader = csv.reader(file)
+            rows = list(reader)
+    except FileNotFoundError:
+        # Nếu file không tồn tại, tạo header cho file mới
+        rows = [['id_paper', 'keywords']]
+
+    # Kiểm tra xem id_paper đã tồn tại trong file hay chưa
+    existing_row = None
+    for row in rows[1:]:
+        if row[0] == id_paper:
+            existing_row = row
+            break
+
+    if existing_row:
+        # Nếu id_paper đã tồn tại, thêm những keywords chưa tồn tại vào
+        existing_keywords = existing_row[1].split(',')
+        new_keywords = [keyword for keyword in keywords if keyword not in existing_keywords]
+        if new_keywords:
+            updated_keywords = existing_row[1] + ',' + ','.join(new_keywords)
+            existing_row[1] = updated_keywords.strip(',')
+    else:
+        # Nếu id_paper chưa tồn tại, thêm một hàng mới vào file
+        new_row = [id_paper, ','.join(keywords)]
+        rows.append(new_row)
+
+    # Ghi dữ liệu đã cập nhật vào file tracking.csv
+    with open(PATH_TRACKING, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
+@api_view(['GET'])
+def tracking(request):
+    try:
+        # Parse the JSON payload from the request body
+        data = request.data
+        id_paper = data.get('id_paper', '')
+        keywords = data.get('keywords', [])
+        
+        if not id_paper or not isinstance(keywords, list):
+            return Response({"error": "Invalid input data"}, status=400)
+
+        # Sử dụng hàm add_to_tracking_csv
+        add_to_tracking_csv(id_paper, keywords)    
+
+        response_data = {
+            "id_paper": id_paper,
+            "keywords": keywords,
+            "status": "Đã thêm vào tracking.csv",
+        }    
+        return Response(response_data, status=200)
+    
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
