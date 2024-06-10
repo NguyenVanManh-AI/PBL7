@@ -195,7 +195,22 @@ def find_keyword(abstract):
     # print(unique_preds_Id)
     return unique_preds_Id
 
-#############################################################################################
+def one_embed(abstract):
+    # abstract = """A  bit  - serial  VLSI  neural  network  is  described  from  an  initial  architecture  for  a  synapse array through to silicon layout and board design.  The issues surrounding bit  - serial  computation,  and  analog/digital  arithmetic  are  discussed  and  the  parallel  development  of  a  hybrid  analog/digital  neural  network  is  outlined.  Learning  and  recall  capabilities  are  reported  for  the  bit  - serial  network  along  with  a  projected  specification  for  a  64  - neuron,  bit  - serial  board  operating  at 20 MHz.  This tech(cid:173) nique  is  extended  to  a  256  (2562  synapses)  network  with  an  update  time  of 3ms,  using  a  "paging"  technique  to  time  - multiplex  calculations  through  the  synapse  array."""
+    abstract_tokens = tokenizerSplit(abstract)
+    # print(len(abstract_tokens))
+    if (len(abstract_tokens)>max_length-2):
+        return []
+    encoding = tokenizer(abstract, return_tensors='pt', max_length=max_length, padding='max_length', truncation=True)
+    input_ids = encoding['input_ids'].to(device)
+    attention_mask = encoding['attention_mask'].to(device)
+    # print(len(abstract_tokens))
+    # print(input_ids.shape)
+    # print(attention_mask.shape)
+    outputs = model.get_embedding(abstract_tokens=abstract_tokens, input_ids=input_ids, attention_mask=attention_mask)
+    return outputs
+
+############################################################################################
 import csv
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -263,10 +278,14 @@ def crawl_data(start = 1987, end = 2024):
     if not file_exists:
         with open('papers_data.csv', mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
+
+    # Mở file với chế độ 'w' để xóa hết dữ liệu cũ nếu file tồn tại
+    # with open('papers_data.csv', mode='w', newline='', encoding='utf-8') as file:
+        # pass  # Chỉ mở file để xóa dữ liệu cũ, không làm gì thêm
     
     with open('papers_data.csv', mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(header)
+        writer_header = False
 
         ii = 0 
         for year in range(start, end):
@@ -299,6 +318,7 @@ def crawl_data(start = 1987, end = 2024):
 
                 div_bibtex_tags = paper_soup.select('div.container-fluid > div.col div')
                 div_bibtex_first = div_bibtex_tags[0]
+                    
                 a_tags = div_bibtex_first.find_all('a')
                 for a_tag in a_tags:
                     href = a_tag.get('href')
@@ -314,24 +334,15 @@ def crawl_data(start = 1987, end = 2024):
                     if text == 'Reviews And Public Comment »' : paper_info['Reviews And Public Comment Url'] = base_url + href
 
                 print(ii, ' - ', paper_info['Title'])
+                if writer_header == False:
+                    writer.writerow(header)
+                    writer_header = True
+
                 writer.writerow([paper_info[key] for key in header])
         driver.quit()
     pass
 
-def one_embed(abstract):
-    # abstract = """A  bit  - serial  VLSI  neural  network  is  described  from  an  initial  architecture  for  a  synapse array through to silicon layout and board design.  The issues surrounding bit  - serial  computation,  and  analog/digital  arithmetic  are  discussed  and  the  parallel  development  of  a  hybrid  analog/digital  neural  network  is  outlined.  Learning  and  recall  capabilities  are  reported  for  the  bit  - serial  network  along  with  a  projected  specification  for  a  64  - neuron,  bit  - serial  board  operating  at 20 MHz.  This tech(cid:173) nique  is  extended  to  a  256  (2562  synapses)  network  with  an  update  time  of 3ms,  using  a  "paging"  technique  to  time  - multiplex  calculations  through  the  synapse  array."""
-    abstract_tokens = tokenizerSplit(abstract)
-    # print(len(abstract_tokens))
-    if (len(abstract_tokens)>max_length-2):
-        return []
-    encoding = tokenizer(abstract, return_tensors='pt', max_length=max_length, padding='max_length', truncation=True)
-    input_ids = encoding['input_ids'].to(device)
-    attention_mask = encoding['attention_mask'].to(device)
-    # print(len(abstract_tokens))
-    # print(input_ids.shape)
-    # print(attention_mask.shape)
-    outputs = model.get_embedding(abstract_tokens=abstract_tokens, input_ids=input_ids, attention_mask=attention_mask)
-    return outputs
+##########################################################################
 
 import schedule
 import time
@@ -342,109 +353,128 @@ import torch
 
 
 def daily_task():
-    print("thuc hien daily_task")
+    print("Tác vụ daily_task crawl dữ liệu vào lúc 8:00 AM được thực hiện")
+    
+    # Đọc dữ liệu từ papers_data_done.csv
+    df_done = pd.read_csv('./papers_data_done.csv')
+    
+    max_current_year = df_done['Year'].max()
+    
     # Lấy năm hiện tại
     current_year = datetime.now().year
-    # Lấy năm trước
-    previous_year = current_year - 1
-    # Kiểm tra nếu hôm nay là ngày đầu tiên của năm
-    if datetime.now().strftime('%m-%d') == '01-01':
-        print("Have crawl_data")
-        crawl_data(previous_year, previous_year)
-        
-        # read file csv được crawl bởi mạnh
-        df_test = pd.read_csv('./papers_data.csv')
-        # Áp dụng hàm find_keyword cho mỗi hàng của DataFrame và tạo cột Keywords
-        df_test['Keywords'] = df_test.apply(lambda x: find_keyword(x['Abstract']), axis=1)
-        # Lưu DataFrame df_test thành một file CSV mới
-        df_test.to_csv('./papers_data_done_new.csv', index=False)
-        df_old = pd.read_csv('./papers_data_done.csv')
-        result = pd.concat([df_old, df_test], axis=0)
-        result.to_csv('./papers_data_done.csv', index=False)
+    
+    # Crawl data từ max_current_year đến current_year
+    crawl_data(max_current_year+1, current_year)
+    
+    try:
+        new_data = pd.read_csv('./papers_data.csv')
+    except:
+        new_data = pd.DataFrame()
 
+    if not new_data.empty:
+        print(new_data.tail())
+        print("Có dữ liệu mới, bắt đầu trích xuất keyword bằng model")
+        
+        # Thêm cột Keywords vào new_data
+        new_data['Keywords'] = new_data.apply(lambda x: find_keyword(x['Abstract']), axis=1)
+        
+        # Thêm cột ID vào new_data
+        last_id = df_done['ID'].max() if not df_done.empty else 0
+        new_data.insert(0, 'ID', range(last_id + 1, last_id + 1 + len(new_data)))
+        
+        # Kết hợp dữ liệu mới với dữ liệu cũ
+        result = pd.concat([df_done, new_data], ignore_index=True)
+        
+        # Lưu lại file papers_data_done.csv
+        result.to_csv('./papers_data_done_new.csv', index=False)
+        print("Đã trích xuất xong và lưu dữ liệu mới !")
         ####################################################################
 
-        # Tạo một tập hợp để chứa tất cả các từ khóa
-        all_keywords = set()
+        # #Tạo một tập hợp để chứa tất cả các từ khóa
+        # all_keywords = set()
 
-        # Lặp qua mỗi hàng dữ liệu trong cột 'Keywords'
-        for keywords_list in df_test['Keywords']:
-            print(keywords_list)
-            # arr = ast.literal_eval(keywords_list)
-            # Chuyển đổi mảng từ khóa thành tập hợp và thêm vào tập hợp chứa tất cả các từ khóa
-            all_keywords.update(set(keywords_list))
+        # # Lặp qua mỗi hàng dữ liệu trong cột 'Keywords'
+        # for keywords_list in new_data['Keywords']:
+        #     print(keywords_list)
+        #     # arr = ast.literal_eval(keywords_list)
+        #     # Chuyển đổi mảng từ khóa thành tập hợp và thêm vào tập hợp chứa tất cả các từ khóa
+        #     all_keywords.update(set(keywords_list))
 
-        all_keywords_list = list(all_keywords)
+        # all_keywords_list = list(all_keywords)
         
-        #
-        one_emb_dict = {}
-        for i in range(0, len(all_keywords_list), 1000):
-            if (i+1000<len(all_keywords_list)):
-                all_keywords_list_split = all_keywords_list[i:i+1000]
-            else:
-                all_keywords_list_split = all_keywords_list[i:]
-            # can remove keyword here
-            one_emb_dict_split = list(map(one_embed, all_keywords_list_split))
-            for j in range(len(one_emb_dict_split)):
-                one_emb_dict[all_keywords_list_split[j]] = one_emb_dict_split[j]
-            print(i)
+        # #
+        # one_emb_dict = {}
+        # for i in range(0, len(all_keywords_list), 1000):
+        #     if (i+1000<len(all_keywords_list)):
+        #         all_keywords_list_split = all_keywords_list[i:i+1000]
+        #     else:
+        #         all_keywords_list_split = all_keywords_list[i:]
+        #     # can remove keyword here
+        #     one_emb_dict_split = list(map(one_embed, all_keywords_list_split))
+        #     for j in range(len(one_emb_dict_split)):
+        #         one_emb_dict[all_keywords_list_split[j]] = one_emb_dict_split[j]
+        #     print(i)
 
-        print(len(one_emb_dict))
+        # print(len(one_emb_dict))
 
         # Giả sử từ điển có cấu trúc như {'key': tensor} và tensor có thể chuyển đổi thành list
         # Chuyển đổi dictionary thành danh sách để lưu vào file CSV
 
-        csv_data = []
+        # csv_data = []
 
-        for key, value in one_emb_dict.items():
-            # Nếu giá trị là tensor, chuyển đổi nó thành list
-            if isinstance(value, torch.Tensor):
-                value = value.tolist()
-            # Thêm key và value vào danh sách csv_data
-            csv_data.append([key] + value)
+        # for key, value in one_emb_dict.items():
+        #     # Nếu giá trị là tensor, chuyển đổi nó thành list
+        #     if isinstance(value, torch.Tensor):
+        #         value = value.tolist()
+        #     # Thêm key và value vào danh sách csv_data
+        #     csv_data.append([key] + value)
 
-        # Lưu vào file .csv
-        with open("output_new.csv", "w", newline='') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            # Ghi tiêu đề nếu cần (ví dụ: ['Key', 'Value1', 'Value2', ...])
-            # csvwriter.writerow(['Key'] + ['Value' + str(i) for i in range(len(csv_data[0]) - 1)])
-            # Ghi dữ liệu
-            csvwriter.writerows(csv_data)
+        # # Lưu vào file .csv
+        # with open("output_new.csv", "w", newline='') as csvfile:
+        #     csvwriter = csv.writer(csvfile)
+        #     # Ghi tiêu đề nếu cần (ví dụ: ['Key', 'Value1', 'Value2', ...])
+        #     # csvwriter.writerow(['Key'] + ['Value' + str(i) for i in range(len(csv_data[0]) - 1)])
+        #     # Ghi dữ liệu
+        #     csvwriter.writerows(csv_data)
 
-        # Hàm để đọc dữ liệu từ file CSV vào dictionary
-        def read_csv_to_dict(file_path):
-            data_dict = {}
-            with open(file_path, mode='r') as csvfile:
-                csvreader = csv.reader(csvfile)
-                for row in csvreader:
-                    key = row[0]
-                    values = row[1:]
-                    data_dict[key] = values
-            return data_dict
+        # # Hàm để đọc dữ liệu từ file CSV vào dictionary
+        # def read_csv_to_dict(file_path):
+        #     data_dict = {}
+        #     with open(file_path, mode='r') as csvfile:
+        #         csvreader = csv.reader(csvfile)
+        #         for row in csvreader:
+        #             key = row[0]
+        #             values = row[1:]
+        #             data_dict[key] = values
+        #     return data_dict
 
-        # Đọc dữ liệu từ hai file CSV
-        new_data = read_csv_to_dict('output_new.csv')
-        old_data = read_csv_to_dict('output.csv')
+        # # Đọc dữ liệu từ hai file CSV
+        # new_data = read_csv_to_dict('output_new.csv')
+        # old_data = read_csv_to_dict('output.csv')
 
-        # Hợp nhất dữ liệu, ưu tiên dữ liệu từ file mới
-        merged_data = old_data.copy()
-        merged_data.update(new_data)
+        # # Hợp nhất dữ liệu, ưu tiên dữ liệu từ file mới
+        # merged_data = old_data.copy()
+        # merged_data.update(new_data)
 
-        # Viết dữ liệu hợp nhất ra file CSV mới
-        with open('output.csv', mode='w', newline='') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            for key, values in merged_data.items():
-                csvwriter.writerow([key] + values)
+        # # Viết dữ liệu hợp nhất ra file CSV mới
+        # with open('output.csv', mode='w', newline='') as csvfile:
+        #     csvwriter = csv.writer(csvfile)
+        #     for key, values in merged_data.items():
+        #         csvwriter.writerow([key] + values)
 
     else:
-        print("Hôm nay không phải là ngày đầu năm. Tác vụ không được thực thi.")
+        print("Chưa có dữ liệu mới. Tác vụ thực thi xong!")
 
 # Đặt tác vụ để chạy mỗi ngày lúc 8 giờ sáng
 schedule.every().day.at("08:00").do(daily_task)
 
+daily_task() # RUN NOW (M-TP)
+
 # Vòng lặp để tiếp tục kiểm tra và chạy các tác vụ được lập lịch
 while True:
-    print("Auto Crawl Start 08:00 AM")
+    print("Kiểm tra thời gian hiện tại: ", datetime.now())
+    print("Sẽ tự động crawl dữ liệu lúc 8:00 AM")
+    print("Ngủ trong 1 phút trước khi kiểm tra lại lịch\n")
     schedule.run_pending()
     time.sleep(60)  # Ngủ trong 1 phút trước khi kiểm tra lại lịch
 
