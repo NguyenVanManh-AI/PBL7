@@ -642,7 +642,7 @@ def add_to_tracking_csv(id_paper, keywords):
         writer = csv.writer(file)
         writer.writerows(rows)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def tracking(request):
     try:
         # Parse the JSON payload from the request body

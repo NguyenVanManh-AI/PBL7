@@ -43,7 +43,7 @@
 <script>
 import TypeIt from "typeit";
 // const { emitEvent } = useEventBus();
-// import ModelRequest from '@/restful/ModelRequest';
+import ModelRequest from '@/restful/ModelRequest';
 // import useEventBus from '@/composables/useEventBus';
 
 export default {
@@ -109,12 +109,13 @@ export default {
         }
       }
       console.log(submitData);
-      // try {
-      //   const { data, messages } = await ModelRequest.post('tracking', submitData, false);
-      //   emitEvent('eventSuccess', 'Update data tracking success !');
-      // } catch (error) {
-      //   console.error('Update data tracking false !', error);
-      // }
+      try {
+        const { data, messages } = await ModelRequest.post('tracking', submitData, false);
+        console.log('Update data tracking success !');
+        console.log(data,messages,'success');
+      } catch (error) {
+        console.error('Update data tracking false !', error);
+      }
     }
   }
 };
