@@ -52,23 +52,28 @@ export default {
         async searchPaper() {
             try {
                 var { results, search_by, keywords } = await ModelRequest.get('search?search=' + this.searchQuery, true);
-                this.texts.push({ type: 'question', contentvalue: this.searchQuery });
+                const min = 1000000000;
+                const max = 9999999999;
+                var idModal = Math.floor(Math.random() * (max - min + 1)) + min;
+                this.texts.push({ type: 'question', contentvalue: this.searchQuery, idModal: idModal });
                 this.texts.push({ type: 'search_by', valueSearchBy: search_by });
                 var input_question = this.searchQuery;
                 this.searchQuery = '';
-                this.addResultsSequentially(results, search_by, keywords, input_question);
+                console.log('List keywords : ', keywords);
+                this.addResultsSequentially(results, search_by, keywords, input_question, idModal);
                 emitEvent('eventSuccess', 'Search paper success!');
             } catch {
                 emitEvent('eventError', 'Search paper fail!');
             }
         },
-        async addResultsSequentially(results, search_by, keywords, question) {
+        async addResultsSequentially(results, search_by, keywords, question, idModal) {
 
             for (var element of results) {
                 this.scrollToBottom();
                 element.search_by = search_by;
                 element.keywords = keywords;
                 element.question = question;
+                element.idModal = idModal;
                 this.texts.push({ type: 'result', contentvalue: element });
                 await this.wait(300); // Đợi 0.5 giây trước khi thêm phần tử tiếp theo
             }

@@ -1,14 +1,35 @@
 <template>
   <div class="container-question" v-if="content.type == 'question'">
-    <p class="additional-content"><i class="fa-solid fa-circle-question"></i> {{ content.contentvalue }}</p>
+    <p data-toggle="modal" :data-target="'#openModalKeywords' + content.idModal" class="additional-content"><i
+        class="fa-solid fa-circle-question"></i> {{ content.contentvalue }}</p>
   </div>
   <div class="search-by" v-if="content.type == 'search_by'">
     <p class="search-line"></p>
     <p class="search-by-content">{{ handleCaseNotResult(content.valueSearchBy) }}</p>
   </div>
+  <div v-if="content.type == 'result'" class="modal fade" :id="'openModalKeywords' + content.contentvalue.idModal"
+    tabindex="-1" role="dialog" aria-labelledby="openModalKeywordsLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div v-if="this.content.contentvalue.keywords.length > 0">
+            <ul class="container-keywords">
+              <span class="name_keyword_span" v-for="(value, key) in content.contentvalue.keywords" :key="key">
+                {{ value }}
+              </span>
+            </ul>
+          </div>
+          <div v-else>
+            <span class="name_keyword_span">{{ content.contentvalue.question }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div v-if="content.type == 'result'" :id="typedId" class="paper-details">
-    <p :content="handleCaseNotResult(content.contentvalue.search_by)" v-tippy class="p-title"><span style='font-weight:bold'><i class="fa-solid fa-bookmark"></i></span> <span
-        :ref="'title' + nth"></span></p>
+    <p :content="handleCaseNotResult(content.contentvalue.search_by)" v-tippy class="p-title"><span
+        style='font-weight:bold'><i class="fa-solid fa-bookmark"></i></span> <span :ref="'title' + nth"></span></p>
     <p class="p-authors" :ref="'authors' + nth"></p>
     <p class="p-year" :ref="'year' + nth"></p>
     <p class="p-volume" :ref="'volume' + nth"></p>
@@ -23,17 +44,18 @@
     <div class="card">
       <div class="card-header" :id="'accordion' + typedId">
         <h5 class="mb-0">
-          <button @click="tracking(content.contentvalue.ID)" class="btn btn-link" data-toggle="collapse" :data-target="'#card' + typedId" aria-expanded="true"
-            aria-controls="collapseOne">
+          <button @click="tracking(content.contentvalue.ID)" class="btn btn-link" data-toggle="collapse"
+            :data-target="'#card' + typedId" aria-expanded="true" aria-controls="collapseOne">
             Show More
           </button>
         </h5>
       </div>
-      <div :id="'card' + typedId" class="collapse" aria-labelledby="headingOne"
-        :data-parent="'#accordion' + typedId">
+      <div :id="'card' + typedId" class="collapse" aria-labelledby="headingOne" :data-parent="'#accordion' + typedId">
         <div class="card-body">
-          <p class="p-abstract" :ref="'abstract' + nth"><span style="font-weight:bold"><i class="fa-solid fa-quote-left"></i> Abstract </span>: {{ content.contentvalue.Abstract }}</p>
-          <p class="p-keywords" :ref="'keywords' + nth"><span style="font-weight:bold"><i class="fa-solid fa-key"></i> Keywords </span>: {{ content.contentvalue.Keywords }}</p>
+          <p class="p-abstract" :ref="'abstract' + nth"><span style="font-weight:bold"><i
+                class="fa-solid fa-quote-left"></i> Abstract </span>: {{ content.contentvalue.Abstract }}</p>
+          <p class="p-keywords" :ref="'keywords' + nth"><span style="font-weight:bold"><i class="fa-solid fa-key"></i>
+              Keywords </span>: {{ content.contentvalue.Keywords }}</p>
         </div>
       </div>
     </div>
@@ -63,7 +85,7 @@ export default {
     console.log(this.content);
     if (this.content.type === 'result') {
       this.showResultDetails();
-    } 
+    }
   },
   methods: {
     showResultDetails() {
@@ -95,8 +117,8 @@ export default {
       totalStr = totalStr.toLowerCase();
       if (this.content.contentvalue.keywords.length > 0) { // phải là search by model 
         arr_keys = Array.from(this.content.contentvalue.keywords);
-        let filteredKeys = arr_keys.filter(item => 
-            (totalStr.includes(item)) // chỉ giữ lại những keyword có trong bài báo được click
+        let filteredKeys = arr_keys.filter(item =>
+          (totalStr.includes(item)) // chỉ giữ lại những keyword có trong bài báo được click
         );
         var submitData = {
           id_paper: id_paper,
@@ -114,13 +136,13 @@ export default {
       try {
         const { data, messages } = await ModelRequest.post('tracking', submitData, false);
         console.log('Update data tracking success !');
-        console.log(data,messages,'success');
+        console.log(data, messages, 'success');
       } catch (error) {
         console.error('Update data tracking false !', error);
       }
       try {
         const { data, messages } = await UserRequest.post('tracking/add', submitData, false);
-        console.log(data,messages,'laravel success');
+        console.log(data, messages, 'laravel success');
       } catch (error) {
         console.error('Update data tracking false !', error);
       }
@@ -131,7 +153,6 @@ export default {
 
 
 <style scoped>
-
 .search-by {
   width: 100%;
   display: flex;
@@ -211,5 +232,23 @@ export default {
 
 .paper-details a {
   color: #0069D9 !important;
+}
+
+.name_keyword_span {
+  background-color: #28A644;
+  border-radius: 10px;
+  padding: 0px 6px;
+  margin: 3px;
+  color: white;
+  font-weight: bold;
+}
+
+.modal-dialog {
+    max-width: 500px;
+}
+
+.container-keywords {
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>

@@ -86,7 +86,6 @@ export default {
     data() {
         return {
             config: config,
-            keyword: '',
             papers: null,
         }
     },
@@ -95,22 +94,23 @@ export default {
     },
     mounted() {
         this.getKeyWork();
-        this.getPaper();
     },
     methods: {
         async getKeyWork() {
             try {
                 var { data, messages } = await UserRequest.get('tracking/get');
-                this.keyword = data.name ?? 'new_user';
-                console.log(this.keyword);
+                var keyword = data.name ?? 'new_user';
+                console.log(keyword);
+                this.getPaper(keyword);
                 console.log(data, messages);
             } catch (error) {
                 console.log('error', error)
             }
         },
-        async getPaper() {
+        async getPaper(keyword) {
             try {
-                var submit_data = { "keyword": this.keyword }
+                var submit_data = { "keyword": keyword }
+                console.log(submit_data);
                 var { results } = await ModelRequest.post('recommender', submit_data);
                 this.papers = results;
                 console.log(this.papers);
