@@ -18,6 +18,7 @@
             <input @keyup.enter="searchPaper" v-model="searchQuery" type="text" class="form-control"
                 id="formGroupExampleInput" placeholder="Search paper">
         </div>
+        <RecommendPaper></RecommendPaper>
     </div>
 </template>
 
@@ -27,11 +28,13 @@ import ModelRequest from '@/restful/ModelRequest';
 import useEventBus from '@/composables/useEventBus';
 const { emitEvent } = useEventBus();
 import TypedText from '@/components/user/pbl7/TypedText.vue';
+import RecommendPaper from '@/components/user/pbl7/RecommendPaper.vue';
 
 export default {
     name: "PaperSearch",
     components: {
-        TypedText
+        TypedText,
+        RecommendPaper
     },
     data() {
         return {

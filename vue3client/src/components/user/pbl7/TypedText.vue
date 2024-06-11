@@ -44,6 +44,8 @@
 import TypeIt from "typeit";
 // const { emitEvent } = useEventBus();
 import ModelRequest from '@/restful/ModelRequest';
+import UserRequest from '@/restful/UserRequest';
+
 // import useEventBus from '@/composables/useEventBus';
 
 export default {
@@ -113,6 +115,12 @@ export default {
         const { data, messages } = await ModelRequest.post('tracking', submitData, false);
         console.log('Update data tracking success !');
         console.log(data,messages,'success');
+      } catch (error) {
+        console.error('Update data tracking false !', error);
+      }
+      try {
+        const { data, messages } = await UserRequest.post('tracking/add', submitData, false);
+        console.log(data,messages,'laravel success');
       } catch (error) {
         console.error('Update data tracking false !', error);
       }

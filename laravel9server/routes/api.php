@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BroadcastController;
 use App\Http\Controllers\ChannelStatisticalController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\UploadFileS3Controller;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -95,5 +96,12 @@ Route::prefix('statistical')->controller(ChannelStatisticalController::class)->g
 Route::prefix('s3')->controller(UploadFileS3Controller::class)->group(function () {
     Route::post('/upload', 'uploadFileToS3');
     Route::delete('/delete', 'deleteFileS3');
+});
+
+Route::prefix('tracking')->controller(TrackingController::class)->group(function () {
+    Route::middleware('check.auth:user_api')->group(function () {
+        Route::post('/add', 'addKeyword');
+        Route::get('/get', 'getKeyword');
+    });
 });
 
