@@ -468,7 +468,7 @@ def daily_task():
 # Đặt tác vụ để chạy mỗi ngày lúc 8 giờ sáng
 schedule.every().day.at("08:00").do(daily_task)
 
-daily_task() # RUN NOW (M-TP)
+# daily_task() # RUN NOW (M-TP)
 
 # Vòng lặp để tiếp tục kiểm tra và chạy các tác vụ được lập lịch
 while True:

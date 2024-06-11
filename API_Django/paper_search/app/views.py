@@ -665,3 +665,76 @@ def tracking(request):
     
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+
+def best_of_year():
+    year = int(datetime.now().year - 1)
+    df = pd.read_csv(PATH)  
+    data_for_year = df[df['Year'] == year]
+    dic = {}
+    for data in data_for_year.Keywords:
+        # Loại bỏ dấu ngoặc đơn và dấu phẩy ở đầu và cuối chuỗi
+        string = data.strip("[]")
+
+        # Tách chuỗi thành các từ dựa trên dấu phẩy và khoảng trắng
+        words = string.split(", ")
+        for word in words:
+            if word[1:-1] not in dic:
+                dic[word[1:-1]] = 1
+            else:
+                dic[word[1:-1]] += 1
+    
+    if "" in dic:
+        dic[""] = 0
+
+    if "re" in dic:
+        dic["re"] = 0
+
+    if "gith" in dic:
+        dic["gith"] = 0
+    
+    if "ne" in dic:
+        dic["ne"] = 0
+
+    if "\\\\" in dic:
+        dic["\\\\"] = 0
+
+    if "ad" in dic:
+        dic["ad"] = 0
+
+    if "online" in dic:
+        dic["online"] = 0
+
+    # Find the keyword with the maximum count
+    if dic:
+        best_keyword = max(dic, key=dic.get)
+        return best_keyword
+    else:
+        return None
+    
+@api_view(['POST'])
+def recommender(request):
+    # Parse the JSON payload from the request body
+    data = request.data
+    keyword = data.get('keyword', 'x')
+    
+    if (keyword == 'new_user'):
+        keyword = best_of_year()
+    
+    search_result = search_by_keywords(keyword, PATH)
+        
+    # Tạo phân trang cho kết quả
+    paginator = PageNumberPagination()
+    paginated_search_result = paginator.paginate_queryset(search_result, request)
+
+    # Tạo dictionary chứa thông tin phân trang và kết quả tìm kiếm
+    response_data = {
+        'keyword': keyword,
+        'count': paginator.page.paginator.count,  # Tổng số mục
+        'next': paginator.get_next_link(),        # Link tới trang kế tiếp (nếu có)
+        'previous': paginator.get_previous_link(),# Link tới trang trước đó (nếu có)
+        'results': paginated_search_result        # Kết quả tìm kiếm
+    }
+
+    # Trả về phản hồi RESTful API
+    return Response(response_data, status=200)

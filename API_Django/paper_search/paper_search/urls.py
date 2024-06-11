@@ -27,6 +27,6 @@ urlpatterns = [
     path('trend_10_year', views.trend_10_year),
     path('trend_10_keywords', views.trend_10_keywords),
     path('tracking', views.tracking),
-    
+    path('recommender', views.recommender),  
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
