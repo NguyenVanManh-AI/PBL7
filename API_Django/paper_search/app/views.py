@@ -534,15 +534,15 @@ import numpy as np
 
 reconstructed_dict = {}
 
-# with open("./app/output.csv", "r", encoding='utf-8') as csvfile:
-#     csvreader = csv.reader(csvfile)
-#     for row in csvreader:
-#         key = row[0]
-#         # print(row[1:][0])
-#         # Chuyển đổi giá trị từ danh sách sang tensor
-#         row_data = ast.literal_eval(row[1:][0])
-#         values = list(map(float, row_data))  # Assuming the values were floats
-#         reconstructed_dict[key] = torch.tensor(values)
+with open("./app/output.csv", "r", encoding='utf-8') as csvfile:
+    csvreader = csv.reader(csvfile)
+    for row in csvreader:
+        key = row[0]
+        # print(row[1:][0])
+        # Chuyển đổi giá trị từ danh sách sang tensor
+        row_data = ast.literal_eval(row[1:][0])
+        values = list(map(float, row_data))  # Assuming the values were floats
+        reconstructed_dict[key] = torch.tensor(values)
 
 def euclidean_distance(a, b):
     return np.linalg.norm(a - b)
